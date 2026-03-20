@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantecko | Quantitative Intelligence. Systematic Precision.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050508;
+    --deep: #090912;
+    --surface: #0e0e1a;
+    --panel: #13131f;
+    --border: rgba(255,255,255,0.07);
+    --border-bright: rgba(255,255,255,0.14);
+    --gold: #c9a84c;
+    --gold-dim: #a07830;
+    --gold-glow: rgba(201,168,76,0.15);
+    --teal: #2edbd4;
+    --teal-dim: rgba(46,219,212,0.12);
+    --white: #f2f2f0;
+    --muted: rgba(242,242,240,0.45);
+    --faint: rgba(242,242,240,0.18);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Outfit', sans-serif; font-weight: 300; overflow-x: hidden; }
+  #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.35; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 60px; height: 76px; background: rgba(5,5,8,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); transition: all 0.4s ease; }
+  nav.scrolled { background: rgba(5,5,8,0.97); height: 64px; }
+  .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-mark { width: 36px; height: 36px; }
+  .logo-mark svg { width: 100%; height: 100%; }
+  .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; letter-spacing: 0.06em; color: var(--white); }
+  .logo-text span { color: var(--gold); }
+  .nav-links { display: flex; align-items: center; gap: 40px; list-style: none; }
+  .nav-links a { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; position: relative; }
+  .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: var(--gold); transition: width 0.3s; }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta { color: var(--gold) !important; border: 1px solid rgba(201,168,76,0.4); padding: 8px 20px; border-radius: 2px; transition: all 0.3s !important; }
+  .nav-cta:hover { background: var(--gold-glow) !important; border-color: var(--gold) !important; }
+  .nav-cta::after { display: none !important; }
+
+  /* HERO */
+  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 120px 60px 80px; overflow: hidden; z-index: 1; }
+  .hero-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 32px; display: flex; align-items: center; gap: 16px; opacity: 0; animation: fadeUp 0.8s ease 0.3s forwards; }
+  .hero-tag::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
+  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 8vw, 108px); font-weight: 300; line-height: 1.0; letter-spacing: -0.01em; max-width: 900px; margin-bottom: 12px; opacity: 0; animation: fadeUp 1s ease 0.5s forwards; }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero-sub { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 3vw, 38px); font-weight: 300; font-style: italic; color: var(--muted); margin-bottom: 48px; opacity: 0; animation: fadeUp 1s ease 0.7s forwards; }
+  .hero-desc { font-size: 16px; font-weight: 300; color: var(--muted); max-width: 520px; line-height: 1.8; margin-bottom: 56px; opacity: 0; animation: fadeUp 1s ease 0.9s forwards; }
+  .hero-actions { display: flex; gap: 20px; align-items: center; opacity: 0; animation: fadeUp 1s ease 1.1s forwards; }
+  .btn-primary { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--black); background: var(--gold); border: none; padding: 16px 40px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { background: #ddb85a; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,168,76,0.3); }
+  .btn-secondary { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); background: transparent; border: 1px solid var(--border-bright); padding: 16px 40px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
+  .btn-secondary:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .hero-stats { position: absolute; bottom: 60px; right: 60px; display: flex; gap: 48px; opacity: 0; animation: fadeUp 1s ease 1.3s forwards; }
+  .hero-stat { text-align: right; }
+  .hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 400; color: var(--white); line-height: 1; }
+  .hero-stat-num span { color: var(--gold); }
+  .hero-stat-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+  .hero-line { position: absolute; bottom: 0; left: 60px; width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, var(--gold)); opacity: 0; animation: fadeIn 1s ease 1.5s forwards; }
+  .data-label { position: absolute; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; color: rgba(201,168,76,0.18); pointer-events: none; white-space: nowrap; }
+  .scroll-indicator { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0; animation: fadeIn 1s ease 2s forwards; }
+  .scroll-indicator span { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--faint); }
+  .scroll-mouse { width: 22px; height: 34px; border: 1px solid var(--border-bright); border-radius: 12px; position: relative; }
+  .scroll-wheel { width: 3px; height: 6px; background: var(--gold); border-radius: 2px; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); animation: scrollWheel 1.8s ease infinite; }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+  .section-header { margin-bottom: 72px; }
+  .section-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-tag::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+  h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 64px); font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; }
+  h2 em { font-style: italic; color: var(--gold); }
+  .section-intro { font-size: 17px; font-weight: 300; color: var(--muted); line-height: 1.8; max-width: 600px; margin-top: 20px; }
+
+  /* PHILOSOPHY */
+  .about { padding: 120px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; border-top: 1px solid var(--border); }
+  .about-visual { position: relative; height: 500px; }
+  .about-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 2px; }
+  .grid-cell { border: 1px solid rgba(201,168,76,0.08); background: transparent; transition: all 0.8s ease; }
+  .grid-cell.lit { background: var(--gold-glow); border-color: rgba(201,168,76,0.25); }
+  .about-card { position: absolute; background: var(--panel); border: 1px solid var(--border); padding: 28px 32px; backdrop-filter: blur(10px); }
+  .about-card-main { bottom: 20px; right: 0; width: 280px; }
+  .about-card-accent { top: 40px; left: 20px; width: 200px; border-color: rgba(201,168,76,0.2); background: rgba(201,168,76,0.04); }
+  .card-num { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+  .card-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-top: 12px; }
+  .about-pillars { display: flex; flex-direction: column; gap: 32px; margin-top: 48px; }
+  .pillar { display: flex; gap: 24px; align-items: flex-start; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .pillar:last-child { border-bottom: none; padding-bottom: 0; }
+  .pillar-icon { width: 40px; height: 40px; background: var(--gold-glow); border: 1px solid rgba(201,168,76,0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 14px; color: var(--gold); }
+  .pillar-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+  .pillar-body { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* METRICS TICKER */
+  .metrics-bar { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 0; background: var(--deep); overflow: hidden; }
+  .ticker-track { display: flex; gap: 80px; animation: ticker 30s linear infinite; white-space: nowrap; }
+  .ticker-item { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  .ticker-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .ticker-value { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--gold); }
+  .ticker-sep { width: 4px; height: 4px; background: var(--border-bright); border-radius: 50%; flex-shrink: 0; }
+
+  /* APPROACH */
+  .approach { padding: 120px 60px; border-top: 1px solid var(--border); }
+  .approach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 64px; }
+  .approach-card { background: var(--panel); border: 1px solid var(--border); padding: 48px 40px; position: relative; overflow: hidden; transition: all 0.4s ease; }
+  .approach-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0; transition: opacity 0.4s; }
+  .approach-card:hover::before { opacity: 1; }
+  .approach-card:hover { background: var(--surface); border-color: var(--border-bright); transform: translateY(-4px); }
+  .card-num-large { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 24px; opacity: 0.7; }
+  .approach-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; margin-bottom: 16px; line-height: 1.2; }
+  .approach-card p { font-size: 14px; color: var(--muted); line-height: 1.8; }
+  .approach-card-bg { position: absolute; bottom: 24px; right: 24px; font-family: 'DM Mono', monospace; font-size: 80px; color: rgba(201,168,76,0.03); font-weight: 500; line-height: 1; pointer-events: none; }
+
+  /* STRATEGIES */
+  .strategies { padding: 120px 60px; border-top: 1px solid var(--border); }
+  .strategies-layout { display: grid; grid-template-columns: 360px 1fr; gap: 80px; margin-top: 64px; }
+  .strategy-nav { display: flex; flex-direction: column; }
+  .strategy-tab { padding: 28px 32px; border-left: 2px solid var(--border); cursor: pointer; transition: all 0.3s; }
+  .strategy-tab.active { border-left-color: var(--gold); background: var(--gold-glow); }
+  .strategy-tab:hover:not(.active) { border-left-color: var(--border-bright); background: rgba(255,255,255,0.02); }
+  .tab-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; transition: color 0.3s; }
+  .strategy-tab.active .tab-title { color: var(--gold); }
+  .tab-sub { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .strategy-content { display: none; animation: fadeIn 0.4s ease; }
+  .strategy-content.active { display: block; }
+  .strategy-content h3 { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; margin-bottom: 24px; line-height: 1.1; }
+  .strategy-content h3 em { font-style: italic; color: var(--gold); }
+  .strategy-content p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 40px; }
+  .strategy-features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .feature-item { padding: 20px 24px; background: var(--panel); border: 1px solid var(--border); }
+  .feature-item-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .feature-item-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* INFRASTRUCTURE */
+  .infrastructure { padding: 120px 60px; border-top: 1px solid var(--border); background: var(--deep); }
+  .infra-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 64px; background: var(--border); }
+  .infra-card { background: var(--panel); padding: 40px 32px; text-align: center; transition: all 0.3s; }
+  .infra-card:hover { background: var(--surface); }
+  .infra-icon { width: 56px; height: 56px; margin: 0 auto 24px; background: var(--gold-glow); border: 1px solid rgba(201,168,76,0.2); display: flex; align-items: center; justify-content: center; }
+  .infra-icon svg { width: 24px; height: 24px; stroke: var(--gold); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .infra-card h4 { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
+  .infra-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .infra-partners { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 1px; background: var(--border); }
+  .partner-cell { background: var(--surface); padding: 28px 32px; text-align: center; }
+  .partner-role { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .partner-name { font-size: 14px; font-weight: 500; }
+
+  /* WHY */
+  .why { padding: 120px 60px; border-top: 1px solid var(--border); }
+  .why-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-top: 64px; }
+  .why-card { background: var(--panel); border: 1px solid var(--border); padding: 48px 40px; display: flex; gap: 28px; transition: all 0.3s; }
+  .why-card:hover { background: var(--surface); border-color: var(--border-bright); }
+  .why-num { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 300; color: rgba(201,168,76,0.12); line-height: 1; flex-shrink: 0; width: 60px; }
+  .why-card h4 { font-size: 18px; font-weight: 500; margin-bottom: 12px; }
+  .why-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* CONTACT */
+  .contact { padding: 120px 60px; border-top: 1px solid var(--border); background: var(--deep); }
+  .contact-layout { display: grid; grid-template-columns: 1fr 420px; gap: 100px; align-items: start; margin-top: 64px; }
+  .contact-form { display: flex; flex-direction: column; gap: 20px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .form-group input, .form-group select, .form-group textarea { background: var(--surface); border: 1px solid var(--border); padding: 14px 16px; color: var(--white); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 300; outline: none; transition: border-color 0.3s; resize: none; appearance: none; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: rgba(201,168,76,0.4); background: var(--panel); }
+  .form-group select option { background: var(--panel); }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: var(--faint); }
+  .contact-info { display: flex; flex-direction: column; gap: 36px; padding-top: 8px; }
+  .contact-item-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .contact-item-value { font-size: 15px; color: var(--white); line-height: 1.7; }
+  .disclaimer { margin-top: 40px; padding: 24px 28px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; color: var(--faint); line-height: 1.7; }
+
+  /* FOOTER */
+  footer { padding: 40px 60px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--black); z-index: 1; position: relative; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.06em; }
+  .footer-logo span { color: var(--gold); }
+  .footer-links { display: flex; gap: 32px; list-style: none; }
+  .footer-links a { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+  .footer-links a:hover { color: var(--white); }
+  .footer-copy { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--faint); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes scrollWheel { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(14px); } }
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.35s; }
+  .reveal-delay-4 { transition-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">
+    <!-- <div class="logo-mark">
+     <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="#c9a84c" stroke-width="1" fill="none"/>
+        <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" stroke="#c9a84c" stroke-width="0.5" fill="rgba(201,168,76,0.05)"/>
+        <line x1="18" y1="2" x2="18" y2="34" stroke="#c9a84c" stroke-width="0.4" stroke-dasharray="2,4"/>
+        <circle cx="18" cy="18" r="3" fill="#c9a84c"/>
+      </svg>
+    </div> -->
+    <span class="logo-text">Quant<span>ecko</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#approach">Approach</a></li>
+    <li><a href="#strategies">Strategies</a></li>
+    <li><a href="#infrastructure">Infrastructure</a></li>
+    <li><a href="#contact" class="nav-cta">Investor Relations</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-tag">Quantitative Intelligence &nbsp;·&nbsp; Systematic Precision</div>
+  <h1>Where <em>Mathematics</em><br>Meets Markets.</h1>
+  <!-- <p class="hero-sub">Engineering Alpha Through Disciplined Systems.</p> -->
+  <p class="hero-desc">A systematic derivatives platform built to generate consistent returns across market cycles - combining income & hedging strategies with technology driven execution.</p>
+  <div class="hero-actions">
+    <a href="#approach" class="btn-primary">Explore Our Approach</a>
+    <a href="#contact" class="btn-secondary">Investor Inquiries</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">12<span>+</span></div>
+      <div class="hero-stat-label">Years of Data simulation</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">10<span>+</span></div>
+      <div class="hero-stat-label">Live Stratgies</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">100<span>%</span></div>
+      <div class="hero-stat-label">Systematic Execution</div>
+    </div>
+  </div>
+  <div class="hero-line"></div>
+  <div class="scroll-indicator">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span>Scroll</span>
+  </div>
+  <div class="data-label" style="top:22%;right:8%">ALPHA // 0.847</div>
+  <div class="data-label" style="top:38%;right:5%">SHARPE // 2.31</div>
+  <div class="data-label" style="top:54%;right:9%">MAX_DD // −4.2%</div>
+  <div class="data-label" style="top:68%;right:6%">CORR // 0.04</div>
+</section>
+
+<!-- TICKER -->
+<div class="metrics-bar">
+  <div class="ticker-track">
+    <div class="ticker-item"><span class="ticker-label">Sharpe Ratio</span><span class="ticker-value">2.31</span></div>
+    <div class="ticker-sep"></div>
+    <!-- <div class="ticker-item"><span class="ticker-label">Live Strategies</span><span class="ticker-value">14</span></div>
+    <div class="ticker-sep"></div> -->
+    <div class="ticker-item"><span class="ticker-label">Strategies Pool</span><span class="ticker-value">14+</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Equity Correlation</span><span class="ticker-value">0.04</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Max Drawdown</span><span class="ticker-value">−4.2%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Research Years</span><span class="ticker-value">4+</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Execution Rate</span><span class="ticker-value">100%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Global Markets</span><span class="ticker-value">28</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Sharpe Ratio</span><span class="ticker-value">2.31</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Live Strategies</span><span class="ticker-value">14</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Live Strategies</span><span class="ticker-value">14+</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Equity Correlation</span><span class="ticker-value">0.04</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Max Drawdown</span><span class="ticker-value">−4.2%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Research Years</span><span class="ticker-value">12+</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Execution Rate</span><span class="ticker-value">100%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item"><span class="ticker-label">Global Markets</span><span class="ticker-value">28</span></div>
+  </div>
+</div>
+
+<!-- PHILOSOPHY -->
+<section class="about" id="philosophy">
+  <div>
+    <div class="section-header reveal">
+      <div class="section-tag">Our Philosophy</div>
+      <h2>Capital Protected<br>by <em>Design.</em></h2>
+      <p class="section-intro">Our edge is hedge every position.
+        Every position is built with predefined risk parameters and integrated hedging — creating portfolios designed for capital preservation, controlled drawdowns, and repeatable performance.
+      </p>
+    </div>
+    <div class="about-pillars reveal reveal-delay-2">
+      <div class="pillar">
+        <div class="pillar-icon">Σ</div>
+        <div>
+          <div class="pillar-title">Mathematics Over Intuition</div>
+          <p class="pillar-body">Investment decisions are derived from systematic models with statistical analysis, not discretionary judgment.
+Our frameworks are grounded in quantitative research, stress-test models across decades of historical data, and designed to perform across changing market conditions.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">∂</div>
+        <div>
+          <div class="pillar-title">Risk Is the Primary Product</div>
+          <p class="pillar-body">Returns are a consequence of disciplined risk management. Our systems define maximum acceptable drawdown before allocating a single unit of capital.</p>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">∞</div>
+        <div>
+          <div class="pillar-title">Perpetual Research Cycle</div>
+          <p class="pillar-body">Markets evolve. So do our models. Our research pipeline operates continuously — identifying new signals, edges, stress-testing simulation, and retiring strategies that no longer perform.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="about-visual reveal reveal-delay-3">
+    <div class="about-grid" id="aboutGrid"></div>
+    <div class="about-card about-card-accent">
+      <div class="card-num"> ≤15% </div>
+      <div class="card-label">MAX DRAWDOWN</div>
+      <p class="card-desc">Maximum expected peak-to-trough drawdown: ≤ 15% of AUM.</p>
+    </div>
+    <div class="about-card about-card-main">
+      <div class="card-num">2.31</div>
+      <div class="card-label">Sharpe Ratio · Since Inception</div>
+      <p class="card-desc">Risk-adjusted performance engineered through systematic precision and disciplined drawdown control.</p>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section class="approach" id="approach">
+  <div class="section-header reveal">
+    <div class="section-tag">Quantitative Framework</div>
+    <h2>The Science of<br><em>Systematic</em> Returns.</h2>
+    <p class="section-intro">We operate in a fully integrated investment framework - linking strategy research, Pre-trade statistical analytics that define execution rules' for trade construction & exit.</p>
+  </div>
+  <!-- <div class="approach-grid">
+    <div class="approach-card reveal reveal-delay-1">
+      <div class="card-num-large">01 / SIGNAL</div>
+      <h3>Data Ingestion &amp; Signal Research</h3>
+      <p>We process 340+ alternative and traditional data streams through proprietary signal extraction pipelines. Signals are validated against rigorous statistical significance thresholds before entering production.</p>
+      <div class="approach-card-bg">01</div>
+    </div> -->
+    <div class="approach-card reveal reveal-delay-2">
+      <div class="card-num-large">01 / MODEL</div>
+      <h3>Portfolio Construction &amp; Optimization</h3>
+      <p>Capital is allocated through a disciplined, risk-first framework that evaluates each position by its impact on overall portfolio behavior — including volatility, drawdown potential, and diversification. Allocations are sized to balance return objectives with capital preservation.</p>
+      <div class="approach-card-bg">02</div>
+    </div>
+    <div class="approach-card reveal reveal-delay-3">
+      <div class="card-num-large">02 / EXECUTE</div>
+      <h3>Systematic Execution &amp; Risk Oversight</h3>
+      <p>Trades are implemented within a disciplined framework executed on our in-house build trading application.
+Predefined position size, exposure, and drawdown guide trade behavior, ensuring capital remains protected even as market conditions evolve.</p>
+      <div class="approach-card-bg">03</div>
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGIES -->
+<!-- <section class="strategies" id="strategies">
+  <div class="section-header reveal">
+    <div class="section-tag">Investment Vehicles</div>
+    <h2>Strategies Built for<br><em>Institutional</em> Capital.</h2>
+  </div>
+  <div class="strategies-layout">
+    <div class="strategy-nav reveal">
+      <div class="strategy-tab active" onclick="switchStrategy('quant-equity')">
+        <div class="tab-title">Quantitative Equity</div>
+        <div class="tab-sub">Long / Short · Global</div>
+      </div>
+      <div class="strategy-tab" onclick="switchStrategy('macro')">
+        <div class="tab-title">Systematic Macro</div>
+        <div class="tab-sub">Trend · Multi-Asset</div>
+      </div>
+      <div class="strategy-tab" onclick="switchStrategy('derivatives')">
+        <div class="tab-title">Derivatives Alpha</div>
+        <div class="tab-sub">Volatility · Options</div>
+      </div>
+      <div class="strategy-tab" onclick="switchStrategy('ml')">
+        <div class="tab-title">Machine Learning Fund</div>
+        <div class="tab-sub">AI-Enhanced · Adaptive</div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="strategy-content active" id="quant-equity">
+        <h3>Quantitative <em>Equity</em> Strategy</h3>
+        <p>A rules-based long/short equity strategy deploying factor models across global developed and emerging markets. The portfolio targets zero net market exposure while harvesting cross-sectional return premia embedded in value, momentum, quality, and low-volatility factors.</p>
+        <div class="strategy-features">
+          <div class="feature-item"><div class="feature-item-title">Universe</div><div class="feature-item-body">5,000+ liquid equities across 28 global markets</div></div>
+          <div class="feature-item"><div class="feature-item-title">Rebalancing</div><div class="feature-item-body">Dynamic signal-triggered with transaction cost awareness</div></div>
+          <div class="feature-item"><div class="feature-item-title">Target Volatility</div><div class="feature-item-body">8–12% annualized, dynamically managed</div></div>
+          <div class="feature-item"><div class="feature-item-title">Access</div><div class="feature-item-body">Qualified Purchasers · Minimum $5M</div></div>
+        </div>
+      </div>
+      <div class="strategy-content" id="macro">
+        <h3>Systematic <em>Macro</em> Strategy</h3>
+        <p>A trend-following and carry strategy spanning equities, fixed income, currencies, and commodities. Systematically identifies persistent cross-asset trends and exploits structural carry premia using a diversified futures portfolio across 60+ liquid instruments.</p>
+        <div class="strategy-features">
+          <div class="feature-item"><div class="feature-item-title">Instruments</div><div class="feature-item-body">60+ liquid futures across 4 asset classes</div></div>
+          <div class="feature-item"><div class="feature-item-title">Strategy</div><div class="feature-item-body">Trend, carry, mean-reversion, and momentum</div></div>
+          <div class="feature-item"><div class="feature-item-title">Drawdown Limit</div><div class="feature-item-body">Hard cap of −10% with automated deleveraging</div></div>
+          <div class="feature-item"><div class="feature-item-title">Access</div><div class="feature-item-body">Qualified Purchasers · Minimum $10M</div></div>
+        </div>
+      </div>
+      <div class="strategy-content" id="derivatives">
+        <h3><em>Derivatives</em> Alpha Strategy</h3>
+        <p>Harvesting the volatility risk premium through a systematic options program on equity indices and individual securities. Exploits the persistent overpricing of implied vs. realized volatility, while embedding dynamic hedges that limit tail exposure.</p>
+        <div class="strategy-features">
+          <div class="feature-item"><div class="feature-item-title">Premium Source</div><div class="feature-item-body">Variance risk premium across volatility regimes</div></div>
+          <div class="feature-item"><div class="feature-item-title">Hedging</div><div class="feature-item-body">Embedded tail hedges · Gamma-neutral targets</div></div>
+          <div class="feature-item"><div class="feature-item-title">Correlation</div><div class="feature-item-body">&lt;0.1 to S&amp;P 500 in all tested regimes</div></div>
+          <div class="feature-item"><div class="feature-item-title">Access</div><div class="feature-item-body">Accredited Investors · Minimum $1M</div></div>
+        </div>
+      </div>
+      <div class="strategy-content" id="ml">
+        <h3>Machine <em>Learning</em> Fund</h3>
+        <p>An adaptive multi-strategy fund powered by ensemble machine learning models that continuously update signal weights in response to evolving market microstructure. Combines the stability of classical quant factors with the adaptability of modern deep learning.</p>
+        <div class="strategy-features">
+          <div class="feature-item"><div class="feature-item-title">Architecture</div><div class="feature-item-body">Gradient boosting + LSTM ensemble models</div></div>
+          <div class="feature-item"><div class="feature-item-title">Adaptation</div><div class="feature-item-body">Weekly model retraining on live market data</div></div>
+          <div class="feature-item"><div class="feature-item-title">Data Inputs</div><div class="feature-item-body">Price, volume, NLP sentiment, macro signals</div></div>
+          <div class="feature-item"><div class="feature-item-title">Access</div><div class="feature-item-body">Qualified Purchasers · Minimum $5M</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!-- INFRASTRUCTURE -->
+<section class="infrastructure" id="infrastructure">
+  <div class="section-header reveal">
+    <div class="section-tag">Institutional Infrastructure</div>
+    <h2>Built on a Foundation<br>of <em>Transparency.</em></h2>
+    <p class="section-intro">Institutional partners demand institutional standards. Quantecko's operational infrastructure provides independent oversight, real-time reporting, and audit-grade transparency at every level.</p>
+  </div>
+  <div class="infra-grid reveal reveal-delay-1">
+    <div class="infra-card">
+      <div class="infra-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h4>Independent Custody</h4>
+      <p>All assets held in segregated accounts with prime brokerage counterparties rated investment grade.</p>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h4>Real-Time Risk Monitoring</h4>
+      <p>Continuous position-level risk attribution with automated circuit breakers and drawdown triggers.</p>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <h4>Independent Administration</h4>
+      <p>Third-party fund administrator performs independent NAV calculation and investor reporting.</p>
+    </div>
+    <div class="infra-card">
+      <div class="infra-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h4>Regulatory Compliance</h4>
+      <p>Registered with applicable regulatory authorities. Annual audited financial statements for all investors.</p>
+    </div>
+  </div>
+  <div class="infra-partners reveal reveal-delay-2">
+    <div class="partner-cell">
+      <div class="partner-role">Prime Broker</div>
+      <div class="partner-name">Interactive Brokers</div>
+    </div>
+    <div class="partner-cell">
+      <div class="partner-role">Fund Administrator</div>
+      <div class="partner-name">Web Technology</div>
+    </div>
+    <div class="partner-cell">
+      <div class="partner-role">Independent Auditor</div>
+      <div class="partner-name">Prism Accounts LLC</div>
+    </div>
+    <div class="partner-cell">
+      <div class="partner-role">Legal Counsel</div>
+      <div class="partner-name">Scouting (TBC)</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why"> 
+  <div class="section-header reveal">
+    <div class="section-tag">Why Quantecko</div>
+    <h2>The Edge That<br><em>Compounds.</em></h2>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal reveal-delay-1">
+      <div class="why-num">01</div>
+      <div>
+        <h4>Structural, Not Speculative</h4>
+        <p>Our returns are sourced from persistent structural premia — variance risk, cross-sectional momentum, and factor returns — not from forecasting macroeconomic events or geopolitical outcomes.</p>
+      </div>
+    </div>
+    <div class="why-card reveal reveal-delay-2">
+      <div class="why-num">02</div>
+      <div>
+        <h4>True Diversification</h4>
+        <p>With market correlation near zero, Quantecko strategies provide genuine portfolio diversification — adding returns during both bull and bear cycles that conventional managers cannot deliver.</p>
+      </div>
+    </div>
+    <div class="why-card reveal reveal-delay-1">
+      <div class="why-num">03</div>
+      <div>
+        <h4>Research-First Culture</h4>
+        <p>Our team of PhDs, engineers, and data scientists operate an always-on research pipeline — continuously discovering new signals, testing hypotheses, and stress-testing portfolios across historical regimes.</p>
+      </div>
+    </div>
+    <div class="why-card reveal reveal-delay-2">
+      <div class="why-num">04</div>
+      <div>
+        <h4>Aligned Incentives</h4>
+        <p>Our principals invest alongside limited partners in every fund. We earn performance fees only when we exceed hurdle rates — ensuring every decision is made in service of investor returns.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-header reveal">
+    <div class="section-tag">Investor Relations</div>
+    <h2>Begin the<br><em>Conversation.</em></h2>
+    <p class="section-intro">Access to Quantecko investment vehicles is restricted to Qualified Purchasers and Accredited Investors. We prioritize direct relationships with HNIs', family offices, strategic capital partners, and institutional allocators.</p>
+  </div>
+  <div class="contact-layout">
+    <div class="reveal reveal-delay-1">
+      <div class="contact-form">
+        <div class="form-row">
+          <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your full name"></div>
+          <div class="form-group"><label>Organization</label><input type="text" placeholder="Firm or institution"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email Address</label><input type="email" placeholder="your@email.com"></div>
+          <div class="form-group">
+            <label>Investor Type</label>
+            <select>
+              <option value="">Select type</option>
+              <option>Family Office</option>
+              <option>Endowment / Foundation</option>
+              <option>Pension Fund</option>
+              <option>Fund of Funds</option>
+              <option>High Net Worth Individual</option>
+              <option>Other Institutional</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Strategy of Interest</label>
+          <select>
+            <option value="">Select strategy</option>
+            <option>Quantitative Equity</option>
+            <option>Systematic Macro</option>
+            <option>Derivatives Alpha</option>
+            <option>Machine Learning Fund</option>
+            <option>General Inquiry</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message (Optional)</label>
+          <textarea rows="4" placeholder="Tell us about your allocation objectives or any specific questions..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="alert('Thank you. Our investor relations team will be in touch within 2 business days.')">Submit Inquiry</button>
+      </div>
+      <div class="disclaimer">Information on this website is for informational purposes only and does not constitute an offer to sell or a solicitation to purchase any securities. Any such offering would be made solely through a confidential private placement memorandum. Past performance is not indicative of future results. All investments involve risk, including possible loss of principal.</div>
+    </div>
+    <div class="contact-info reveal reveal-delay-2">
+      <div>
+        <div class="contact-item-label">Headquarters</div>
+        <div class="contact-item-value">6428 Riviera Drive Irving<br>Texas, TX 75039</div>
+      </div>
+      <div>
+        <div class="contact-item-label">Investor Relations</div>
+        <div class="contact-item-value">ir@quantecko.com</div>
+      </div>
+      <!-- <div>
+        <div class="contact-item-label">Research Partnerships</div>
+        <div class="contact-item-value">research@quantecko.com</div>
+      </div> -->
+      <div>
+        <div class="contact-item-label">Global Presence</div>
+        <div class="contact-item-value">America &nbsp;·&nbsp; India</div>
+      </div>
+      <div>
+        <div class="contact-item-label">Office Hours</div>
+        <div class="contact-item-value">Monday – Friday<br>8:00 AM – 6:00 PM EST</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Quant<span>ecko</span></div>
+  <ul class="footer-links">
+    <li><a href="#">Privacy Policy</a></li>
+    <li><a href="#">Legal Disclosures</a></li>
+    <li><a href="#">Regulatory</a></li>
+    <li><a href="#">ADV Form</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 Quantecko Capital Management LLC. All rights reserved.</div>
+</footer>
+
+<script>
+/* PARTICLE CANVAS */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, nodes = [];
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+function initNodes() {
+  nodes = [];
+  const count = Math.floor((W * H) / 14000);
+  for (let i = 0; i < count; i++) {
+    nodes.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, r: Math.random() * 1.2 + 0.4 });
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 140) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(201,168,76,${(1 - dist/140) * 0.12})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(201,168,76,0.35)';
+    ctx.fill();
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > W) n.vx *= -1;
+    if (n.y < 0 || n.y > H) n.vy *= -1;
+  });
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize', () => { resize(); initNodes(); });
+resize(); initNodes(); draw();
+
+/* NAV SCROLL */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80);
+});
+
+/* SCROLL REVEAL */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ABOUT GRID */
+function buildGrid() {
+  const grid = document.getElementById('aboutGrid');
+  for (let i = 0; i < 25; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+    grid.appendChild(cell);
+  }
+  setInterval(() => {
+    const cells = grid.querySelectorAll('.grid-cell');
+    cells.forEach(c => c.classList.remove('lit'));
+    const count = Math.floor(Math.random() * 7) + 2;
+    for (let i = 0; i < count; i++) cells[Math.floor(Math.random() * 25)].classList.add('lit');
+  }, 1400);
+}
+buildGrid();
+
+/* STRATEGY TABS */
+function switchStrategy(id) {
+  const ids = ['quant-equity', 'macro', 'derivatives', 'ml'];
+  document.querySelectorAll('.strategy-tab').forEach((t, i) => t.classList.toggle('active', ids[i] === id));
+  document.querySelectorAll('.strategy-content').forEach(c => c.classList.toggle('active', c.id === id));
+}
+</script>
+</body>
+</html>
