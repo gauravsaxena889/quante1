@@ -197,6 +197,136 @@
   .reveal-delay-2 { transition-delay: 0.2s; }
   .reveal-delay-3 { transition-delay: 0.35s; }
   .reveal-delay-4 { transition-delay: 0.5s; }
+
+  /* ─── HAMBURGER MENU ─────────────────────────────────────────────────── */
+  .nav-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; cursor: pointer; background: none; border: none; padding: 4px; z-index: 200; }
+  .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); transition: all 0.3s ease; transform-origin: center; }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* Mobile nav drawer */
+  .mobile-nav { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5,5,8,0.98); backdrop-filter: blur(24px); z-index: 150; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+  .mobile-nav.open { display: flex; animation: fadeIn 0.3s ease; }
+  .mobile-nav a { font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 20px 40px; width: 100%; text-align: center; border-bottom: 1px solid var(--border); transition: color 0.3s; }
+  .mobile-nav a:hover, .mobile-nav a:active { color: var(--gold); }
+  .mobile-nav a.mobile-cta { color: var(--gold); border: 1px solid rgba(201,168,76,0.4); margin: 32px 40px 0; width: calc(100% - 80px); border-radius: 2px; }
+
+  /* ─── TABLET (≤1024px) ──────────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    nav { padding: 0 32px; }
+    .nav-links { gap: 24px; }
+
+    .hero { padding: 100px 32px 80px; }
+    .hero-stats { position: static; margin-top: 48px; justify-content: flex-start; gap: 32px; opacity: 1; animation: none; }
+    .hero-stat { text-align: left; }
+    .hero-line { left: 32px; }
+    .data-label { display: none; }
+
+    .about { padding: 80px 32px; gap: 60px; }
+    .about-visual { height: 380px; }
+    .about-card-main { width: 240px; }
+
+    .approach { padding: 80px 32px; }
+    .approach-grid { grid-template-columns: 1fr; gap: 2px; }
+
+    .infrastructure { padding: 80px 32px; }
+    .infra-grid { grid-template-columns: repeat(2, 1fr); }
+    .infra-partners { grid-template-columns: repeat(2, 1fr); }
+
+    .why { padding: 80px 32px; }
+
+    .contact { padding: 80px 32px; }
+    .contact-layout { grid-template-columns: 1fr; gap: 60px; }
+
+    footer { padding: 32px; flex-wrap: wrap; gap: 20px; }
+    .footer-links { gap: 20px; flex-wrap: wrap; }
+  }
+
+  /* ─── MOBILE (≤768px) ───────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    /* Nav */
+    nav { padding: 0 20px; height: 64px; }
+    nav.scrolled { height: 56px; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+
+    /* Hero */
+    .hero { padding: 90px 20px 72px; min-height: 100svh; }
+    .hero-tag { font-size: 10px; letter-spacing: 0.15em; margin-bottom: 24px; }
+    .hero h1 { font-size: clamp(40px, 11vw, 64px); margin-bottom: 16px; }
+    .hero-desc { font-size: 15px; max-width: 100%; margin-bottom: 40px; }
+    .hero-actions { flex-direction: column; align-items: flex-start; gap: 12px; width: 100%; }
+    .btn-primary, .btn-secondary { width: 100%; text-align: center; padding: 16px 24px; }
+    .hero-stats { flex-direction: row; flex-wrap: wrap; gap: 24px; margin-top: 40px; }
+    .hero-stat { min-width: calc(50% - 12px); }
+    .hero-stat-num { font-size: 28px; }
+    .hero-line { display: none; }
+    .scroll-indicator { display: none; }
+
+    /* Ticker */
+    .metrics-bar { padding: 16px 0; }
+
+    /* Philosophy */
+    .about { padding: 64px 20px; grid-template-columns: 1fr; gap: 48px; }
+    .about-visual { height: 280px; order: -1; }
+    .about-card-accent { top: 16px; left: 8px; width: 160px; padding: 20px; }
+    .about-card-accent .card-num { font-size: 32px; }
+    .about-card-main { bottom: 8px; right: 0; width: 200px; padding: 20px; }
+    .about-card-main .card-num { font-size: 36px; }
+    .about-pillars { gap: 24px; margin-top: 32px; }
+    .pillar { gap: 16px; padding-bottom: 24px; }
+    .pillar-icon { width: 36px; height: 36px; font-size: 12px; flex-shrink: 0; }
+
+    /* Approach */
+    .approach { padding: 64px 20px; }
+    .approach-grid { margin-top: 40px; }
+    .approach-card { padding: 32px 24px; }
+    .approach-card h3 { font-size: 22px; }
+
+    /* Infrastructure */
+    .infrastructure { padding: 64px 20px; }
+    .infra-grid { grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 40px; }
+    .infra-card { padding: 28px 20px; }
+    .infra-card h4 { font-size: 14px; }
+    .infra-partners { grid-template-columns: 1fr 1fr; margin-top: 1px; }
+    .partner-cell { padding: 20px 16px; }
+    .partner-name { font-size: 13px; }
+
+    /* Why */
+    .why { padding: 64px 20px; }
+    .why-grid { grid-template-columns: 1fr; gap: 2px; margin-top: 40px; }
+    .why-card { padding: 32px 24px; gap: 20px; }
+    .why-num { font-size: 40px; width: 48px; }
+    .why-card h4 { font-size: 16px; }
+
+    /* Contact */
+    .contact { padding: 64px 20px; }
+    .contact-layout { grid-template-columns: 1fr; gap: 48px; margin-top: 40px; }
+    .form-row { grid-template-columns: 1fr; gap: 16px; }
+    .contact-info { gap: 28px; }
+
+    /* Footer */
+    footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; gap: 20px; }
+    .footer-links { gap: 16px; }
+    .footer-copy { font-size: 9px; }
+
+    /* Section headings */
+    .section-header { margin-bottom: 48px; }
+    h2 { font-size: clamp(28px, 8vw, 44px); }
+    .section-intro { font-size: 15px; margin-top: 16px; }
+  }
+
+  /* ─── SMALL MOBILE (≤480px) ─────────────────────────────────────────── */
+  @media (max-width: 480px) {
+    .hero h1 { font-size: clamp(34px, 12vw, 52px); }
+    .hero-stats { gap: 16px; }
+    .hero-stat { min-width: calc(50% - 8px); }
+    .infra-grid { grid-template-columns: 1fr; }
+    .infra-partners { grid-template-columns: 1fr; }
+    .about-card-main { width: 180px; }
+    .footer-links { flex-direction: column; gap: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -206,14 +336,14 @@
 <!-- NAV -->
 <nav id="navbar">
   <a class="nav-logo" href="#">
-    <div class="logo-mark">
+    <!-- <div class="logo-mark">
      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="#c9a84c" stroke-width="1" fill="none"/>
         <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" stroke="#c9a84c" stroke-width="0.5" fill="rgba(201,168,76,0.05)"/>
         <line x1="18" y1="2" x2="18" y2="34" stroke="#c9a84c" stroke-width="0.4" stroke-dasharray="2,4"/>
         <circle cx="18" cy="18" r="3" fill="#c9a84c"/>
       </svg>
-    </div> 
+    </div> -->
     <span class="logo-text">Quant<span>ecko</span></span>
   </a>
   <ul class="nav-links">
@@ -223,7 +353,19 @@
     <li><a href="#infrastructure">Infrastructure</a></li>
     <li><a href="#contact" class="nav-cta">Investor Relations</a></li>
   </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#philosophy" class="mobile-link">Philosophy</a>
+  <a href="#approach" class="mobile-link">Approach</a>
+  <a href="#infrastructure" class="mobile-link">Infrastructure</a>
+  <a href="#contact" class="mobile-link">Why Quantecko</a>
+  <a href="#contact" class="mobile-cta mobile-link">Investor Relations</a>
+</div>
 
 <!-- HERO -->
 <section class="hero" id="hero">
@@ -593,11 +735,11 @@ Predefined position size, exposure, and drawdown guide trade behavior, ensuring 
     <div class="contact-info reveal reveal-delay-2">
       <div>
         <div class="contact-item-label">Headquarters</div>
-        <div class="contact-item-value">6428 Riviera Drive Irving<br>Texas, TX 75039</div>
+        <div class="contact-item-value">Quantecko Research Capital<br>6428 Riviera Drive Irving<br>Texas, TX 75039</div>
       </div>
       <div>
         <div class="contact-item-label">Investor Relations</div>
-        <div class="contact-item-value">ir@quantecko.com</div>
+        <div class="contact-item-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3dac1f3c2c6d2ddc7d6d0d8dc9dd0dcde">[email&#160;protected]</a></div>
       </div>
       <!-- <div>
         <div class="contact-item-label">Research Partnerships</div>
@@ -627,7 +769,7 @@ Predefined position size, exposure, and drawdown guide trade behavior, ensuring 
   <div class="footer-copy">© 2025 Quantecko Capital Management LLC. All rights reserved.</div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* PARTICLE CANVAS */
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
@@ -705,9 +847,31 @@ buildGrid();
 /* STRATEGY TABS */
 function switchStrategy(id) {
   const ids = ['quant-equity', 'macro', 'derivatives', 'ml'];
-  document.querySelectorAll('.strategy-tab').forEach((t, i) => t.classList.toggle('active', ids[i] === id));
-  document.querySelectorAll('.strategy-content').forEach(c => c.classList.toggle('active', c.id === id));
+  document.querySelectorAll('.strategy-content').forEach(el => { el.classList.remove('active'); });
+  document.querySelectorAll('.strategy-tab').forEach(el => { el.classList.remove('active'); });
+  const content = document.getElementById(id);
+  if (content) content.classList.add('active');
+  const tabs = document.querySelectorAll('.strategy-tab');
+  const map = { 'quant-equity': 0, 'macro': 1, 'derivatives': 2, 'ml': 3 };
+  if (tabs[map[id]]) tabs[map[id]].classList.add('active');
 }
+
+/* HAMBURGER MENU */
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+  document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+});
+document.querySelectorAll('.mobile-link').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileNav.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
 </script>
 </body>
 </html>
